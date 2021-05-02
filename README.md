@@ -1,4 +1,6 @@
 # discord-helpers
+![Downloads](https://static.pepy.tech/personalized-badge/discord-helpers?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads)
+![PyPI](https://img.shields.io/pypi/v/discord-helpers.svg) <br>
 A helper module for discord.py <br>
 Made by Clone#4457 on Discord
 
