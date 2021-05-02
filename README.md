@@ -23,7 +23,7 @@ async def on_message(message):
 ```
 ```python
 @bot.command()
-async def change_prefix(ctx, ,*, prefix):
+async def change_prefix(ctx, *, prefix):
     await helpers.Prefixes.change_prefix("data.db", ctx.guild.id, prefix)
 ```
 ### Chatbot
@@ -38,11 +38,11 @@ async def on_message(message):
 ```python
 @bot.command()
 async def send_webhook(ctx, *, text):
-    await helper.Webhooks.find_and_send(text, channel=ctx.channel, webhook_name="Test")
+    await helpers.Webhooks.find_and_send(text, channel=ctx.channel, webhook_name="Test")
 ```
 ### Status
 ```python
-bot.status = helpers.Status("status 1", "status 2")
+bot.status = helpers.StatusCycle("status 1", "status 2")
 @tasks.loop(seconds=12)
 async def change_status():
     await bot.change_presence(activity=discord.Game(bot.status.next()))
