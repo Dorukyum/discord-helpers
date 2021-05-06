@@ -1,6 +1,11 @@
-from prsaw import RandomStuff
+import aiohttp
 
 
 async def chatbot(message: str, *, api_key: str, language: str = "en") -> str:
-    wrapper = RandomStuff(async_mode=True, api_key=api_key)
-    return await wrapper.get_ai_response(message, lang=language)
+    headers = {"x-api-key": api_key}
+    params = {"type": "stable", "message": message}
+    async with aiohttp.ClientSession() as ses:
+        async with ses.get(
+            "https://api.pgamerx.com/v3/ai/response", headers=headers, params=params
+        ) as response:
+            return await response.json()
