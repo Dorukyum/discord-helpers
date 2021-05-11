@@ -1,15 +1,24 @@
 # discord-helpers
 ![Downloads](https://static.pepy.tech/personalized-badge/discord-helpers?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads)
 ![PyPI](https://img.shields.io/pypi/v/discord-helpers.svg) <br>
-A helper module for discord.py <br>
-Made by Clone#4457 on Discord
+A helper module for discord.py
 
 ## Current Features (v0.0.2)
-* Per server custom prefixes using SQLite3
-* Chatbot coroutine to get a reply from an AI ([The Random Stuff API](https://api-info.pgamerx.com/endpoints.html))
+* Per server custom prefixes using SQLite3 - aiosqlite
+* Chatbot coroutine to get a reply from an AI ([The Random Stuff API](https://api-info.pgamerx.com/))
 * A cycling status for your bot
 * A coroutine to find a webhook from a channel and send a message via it
 * Coroutines for using the GET and POST methods easily
+
+## Installation
+### Stable Release:
+```
+pip install -U discord-helpers
+```
+### Development:
+```
+pip install -U git+https://github.com/Dorukyum/discord-helpers.git
+```
 
 ## Some Examples
 ### Prefixes
@@ -20,7 +29,7 @@ bot = commands.Bot(command_prefix = helpers.Prefixes.custom_prefix("data.db", "!
 ```python
 @bot.event
 async def on_message(message):
-    if client.user == message.mentions[0]:
+    if message.mentions[0] == client.user:
         await helpers.Prefixes.reply_with_prefix(bot, message)
 ```
 ```python
