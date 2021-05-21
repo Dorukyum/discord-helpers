@@ -7,6 +7,7 @@ A helper module for discord.py
 * Per server custom prefixes using SQLite3 - aiosqlite
 * Chatbot coroutine to get a reply from an AI ([The Random Stuff API](https://api-info.pgamerx.com/))
 * A cycling status for your bot
+* A function to create a rich embed with every feature in a simple line of code
 * A coroutine to find a webhook from a channel and send a message via it
 * Coroutines for using the GET and POST methods easily
 

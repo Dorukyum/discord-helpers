@@ -8,6 +8,7 @@ from .prefixes import *
 from .status import *
 from .webhooks import *
 from .requests import *
+from .embed import *
 
 __author__ = "Dorukyum"
 __license__ = "MIT"
