@@ -6,6 +6,8 @@ def Embed(
     title: str = "",
     description: str = "",
     colour: Union[int, Colour, Color] = 0x202225,
+    fields: dict = {},
+    inline_fields: bool = True,
     footer: str = "",
     footer_icon: str = None,
     author: str = "",
@@ -26,4 +28,6 @@ def Embed(
         embed.set_thumbnail(url=thumbnail)
     if image is not None:
         embed.set_image(url=image)
+    for name, value in fields.items():
+        embed.add_field(name=name, value=value, inline=inline_fields)
     return embed
