@@ -4,7 +4,7 @@ Made by Dorukyum on GitHub
 """
 
 from .chatbot import *
-from .prefixes import *
+from .database import *
 from .status import *
 from .webhooks import *
 from .requests import *

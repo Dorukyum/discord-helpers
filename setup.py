@@ -11,7 +11,7 @@ classifiers = [
 setup(
     name='discord-helpers',
     packages=['discord.ext.helpers'],
-    version='0.0.2',
+    version='0.0.3',
     license='MIT',
     description='A helper module for discord.py',
     long_description=open('README.md', encoding='utf-8').read(),

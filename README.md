@@ -3,8 +3,9 @@
 ![PyPI](https://img.shields.io/pypi/v/discord-helpers.svg) <br>
 A helper module for discord.py
 
-## Current Features (v0.0.2)
+## Current Features (v0.0.3)
 * Per server custom prefixes using SQLite3 - aiosqlite
+* Invite tracker
 * Chatbot coroutine to get a reply from an AI ([The Random Stuff API](https://api-info.pgamerx.com/))
 * A cycling status for your bot
 * A function to create a rich embed with every feature in a simple line of code
@@ -24,19 +25,25 @@ pip install -U git+https://github.com/Dorukyum/discord-helpers.git
 ## Some Examples
 ### Prefixes
 ```python
+import discord
 from discord.ext import commands, helpers
-bot = commands.Bot(command_prefix = helpers.Prefixes.custom_prefix("data.db", "!"))
+bot = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
+
+@bot.event
+async def on_ready():
+    bot.db = helpers.Database(bot, "data.db") # also used in the examples below
+    bot.command_prefix = bot.db.custom_prefix("!")
 ```
 ```python
 @bot.event
 async def on_message(message):
 	if message.mentions[0] == client.user:
-		await helpers.Prefixes.reply_with_prefix(bot, message)
+		await bot.db.reply_with_prefix(message)
 ```
 ```python
 @bot.command()
 async def change_prefix(ctx, *, prefix):
-	await helpers.Prefixes.change_prefix("data.db", ctx.guild.id, prefix)
+	await bot.db.change_prefix(ctx.guild.id, prefix)
 ```
 ### Chatbot
 ```python
@@ -45,6 +52,16 @@ async def on_message(message):
 	if message.channel.id == my_chatbot_channel_id:
 		response = await helpers.chatbot(message.content, api_key=my_api_key)
 		await message.reply(response)
+```
+### Invite Tracker
+```python
+@bot.event
+async def on_invite_create(inv):
+    await bot.db.invite_tracker.add_invite(inv)
+# and so on for the guild_join, guild_remove and invite_delete events
+@bot.command()
+async def who_invited(ctx, member: discord.Member)
+    await ctx.send(bot.db.invite_tracker.track(member).name)
 ```
 ### Webhooks
 ```python
