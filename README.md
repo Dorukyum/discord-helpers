@@ -72,7 +72,7 @@ async def send_webhook(ctx, *, text):
 ### Status
 ```python
 bot.status = helpers.StatusCycle("status 1", "status 2")
-@tasks.loop(seconds=12)
+@tasks.loop(minutes=3)
 async def change_status():
 	await bot.change_presence(activity=discord.Game(bot.status.next()))
 ```
