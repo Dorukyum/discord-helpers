@@ -59,9 +59,11 @@ async def on_message(message):
 async def on_invite_create(inv):
     await bot.db.invite_tracker.add_invite(inv)
 # and so on for the guild_join, guild_remove and invite_delete events
-@bot.command()
-async def who_invited(ctx, member: discord.Member)
-    await ctx.send(bot.db.invite_tracker.track(member).name)
+@bot.event
+async def on_member_join(member):
+    inviter, invite = await bot.db.invite_tracker.track(member)
+    await bot.get_channel(my_channel_id).send(inviter.name)
+    await bot.db.invite_tracker.increment_uses(invite, 1)
 ```
 ### Webhooks
 ```python

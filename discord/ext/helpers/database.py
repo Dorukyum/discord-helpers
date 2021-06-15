@@ -57,9 +57,9 @@ class Database:
         def __init__(self, bot, filename):
             self.bot = bot
             self.filename = filename
-            asyncio.get_event_loop().create_task(self.init())
+            asyncio.get_event_loop().create_task(self._init())
 
-        async def init(self):
+        async def _init(self):
             self.data = {
                 g.id: {i.id: i.uses for i in await g.invites()} for g in self.bot.guilds
             }
@@ -119,7 +119,7 @@ class Database:
             del self.data[invite.guild.id][invite.id]
             await self._remove_from_db("invite", invite.id)
 
-        async def increment_invite_uses(self, invite, count):
+        async def increment_uses(self, invite, count):
             self.data[invite.guild.id][invite.id] += count
             async with aiosqlite.connect(self.filename) as con:
                 async with con.cursor() as cur:
@@ -132,7 +132,7 @@ class Database:
         async def track(self, member):
             new_data = {i.id: i.uses for i in await member.guild.invites()}
             for inv in self.data[member.guild.id].keys():
-                if new_data[inv] == self.data[member.guild.id][inv]:
+                if new_data[inv] == self.data[member.guild.id][inv] + 1:
                     for invite in await member.guild.invites():
                         if invite.id == inv:
-                            return member.guild.get_member(invite.inviter.id)
+                            return [member.guild.get_member(invite.inviter.id), invite]
