@@ -12,4 +12,4 @@ from .embed import *
 
 __author__ = "Dorukyum"
 __license__ = "MIT"
-__version__ = "0.0.2"
+__version__ = "0.0.4"

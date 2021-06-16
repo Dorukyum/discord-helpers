@@ -3,7 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/discord-helpers.svg) <br>
 A helper module for discord.py
 
-## Current Features (v0.0.3)
+## Current Features (v0.0.4)
 * Per server custom prefixes using SQLite3 - aiosqlite
 * Invite tracker
 * Chatbot coroutine to get a reply from an AI ([The Random Stuff API](https://api-info.pgamerx.com/))
