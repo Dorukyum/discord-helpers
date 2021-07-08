@@ -3,9 +3,10 @@
 ![PyPI](https://img.shields.io/pypi/v/discord-helpers.svg) <br>
 A helper module for discord.py
 
-## Current Features (v0.0.4)
+## Current Features (v0.0.5)
 * Per server custom prefixes using SQLite3 - aiosqlite
 * Invite tracker
+* Paginator
 * Chatbot coroutine to get a reply from an AI ([The Random Stuff API](https://api-info.pgamerx.com/))
 * A cycling status for your bot
 * A function to create a rich embed with every feature in a simple line of code
@@ -52,6 +53,14 @@ async def on_message(message):
 	if message.channel.id == my_chatbot_channel_id:
 		response = await helpers.chatbot(message.content, api_key=my_api_key)
 		await message.reply(response)
+```
+### Paginator
+```python
+@bot.command()
+async def send_pages(ctx):
+    paginator = helpers.Paginator(bot, pages=(discord.Embed(title="Page 1"),))
+    paginator.add_page(discord.Embed(title="Page 2"))
+    await paginator.start(ctx)
 ```
 ### Invite Tracker
 ```python

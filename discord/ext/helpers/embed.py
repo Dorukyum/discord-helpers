@@ -1,5 +1,7 @@
-from discord import Embed as OriginalEmbed, Colour, Color
 from typing import Union
+
+from discord import Color, Colour
+from discord import Embed as OriginalEmbed
 
 
 def Embed(

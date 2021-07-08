@@ -1,7 +1,11 @@
-import aiosqlite, discord, asyncio
-from discord.ext import commands
-from typing import Union, Coroutine
+import asyncio
 from inspect import iscoroutinefunction
+from typing import Coroutine, Union
+
+import aiosqlite
+
+import discord
+from discord.ext import commands
 
 
 class Database:
