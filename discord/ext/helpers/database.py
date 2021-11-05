@@ -1,6 +1,6 @@
 import asyncio
 from inspect import iscoroutinefunction
-from typing import Coroutine
+from typing import Coroutine, Dict, List, Union
 
 import aiosqlite
 
@@ -9,7 +9,7 @@ from discord.ext import commands
 
 
 class Database:
-    def __init__(self, bot: commands.Bot, filename: str):
+    def __init__(self, bot: commands.Bot, filename: str) -> None:
         self.filename = filename
         self.bot = bot
 
@@ -48,7 +48,7 @@ class Database:
                 prefix = prefix(self.bot, message)
         return await message.channel.send(f"My prefix is `{prefix}`")
 
-    async def change_prefix(self, guild_id: int, prefix: str):
+    async def change_prefix(self, guild_id: int, prefix: str) -> None:
         async with aiosqlite.connect(self.filename) as con:
             async with con.cursor() as cur:
                 await cur.execute(
@@ -58,12 +58,12 @@ class Database:
 
 
 class InviteTracker:
-    def __init__(self, bot, filename):
+    def __init__(self, bot: discord.Client, filename: str) -> None:
         self.bot = bot
         self.filename = filename
         asyncio.get_event_loop().create_task(self._init())
 
-    async def _init(self):
+    async def _init(self) -> None:
         self.data = {
             g.id: {i.id: i.uses for i in await g.invites()} for g in self.bot.guilds
         }
@@ -78,25 +78,28 @@ class InviteTracker:
                 if data == []:
                     await self._add_to_db(self.data, True)
 
-    async def _add_to_db(self, data, init=False, *, guild_id=0):
+    async def _add_to_db(
+        self, data: Dict[int, Dict[int, int]], init: bool = False, *, guild_id: int = 0
+    ) -> None:
         async with aiosqlite.connect(self.filename) as con:
             async with con.cursor() as cur:
                 if init:
-                    for guild_id in data.keys():
-                        for invite_id in data[guild_id].keys():
+                    for guild_id, value in data.items():
+                        for invite_id in value.keys():
                             await cur.execute(
                                 "INSERT INTO invites VALUES (?, ?, ?)",
                                 (guild_id, invite_id, data[guild_id][invite_id]),
                             )
                 else:
-                    for invite_id in data.keys():
+                    for invite_id, value_ in data.items():
                         await cur.execute(
                             "INSERT INTO invites VALUES (?, ?, ?)",
-                            (guild_id, invite_id, data[invite_id]),
+                            (guild_id, invite_id, value_),
                         )
+
                 await con.commit()
 
-    async def _remove_from_db(self, what, data):
+    async def _remove_from_db(self, what, data) -> None:
         async with aiosqlite.connect(self.filename) as con:
             async with con.cursor() as cur:
                 await cur.execute(
@@ -105,23 +108,23 @@ class InviteTracker:
                 )
                 await con.commit()
 
-    async def add_guild(self, guild):
+    async def add_guild(self, guild: discord.Guild) -> None:
         self.data[guild.id] = {i.id: i.uses for i in await guild.invites()}
         await self._add_to_db(self.data[guild.id], guild.id)
 
-    async def remove_guild(self, guild):
+    async def remove_guild(self, guild: discord.Guild) -> None:
         del self.data[guild.id]
         await self._remove_from_db("guild", guild.id)
 
-    async def add_invite(self, invite):
+    async def add_invite(self, invite: discord.Invite) -> None:
         self.data[invite.guild.id][invite.id] = invite.uses
         await self._add_to_db(self.data[invite.guild.id][invite.id], invite.guild.id)
 
-    async def remove_invite(self, invite):
+    async def remove_invite(self, invite: discord.Invite) -> None:
         del self.data[invite.guild.id][invite.id]
         await self._remove_from_db("invite", invite.id)
 
-    async def increment_uses(self, invite, count):
+    async def increment_uses(self, invite: discord.Invite, count: int) -> None:
         self.data[invite.guild.id][invite.id] += count
         async with aiosqlite.connect(self.filename) as con:
             async with con.cursor() as cur:
@@ -131,7 +134,9 @@ class InviteTracker:
                 )
                 await con.commit()
 
-    async def track(self, member):
+    async def track(
+        self, member: discord.Member
+    ) -> List[Union[discord.Member, discord.Invite]]:
         new_data = {i.id: i.uses for i in await member.guild.invites()}
         for inv in self.data[member.guild.id].keys():
             if new_data[inv] == self.data[member.guild.id][inv] + 1:
