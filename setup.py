@@ -8,13 +8,16 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
+with open("README.md", encoding="utf-8") as f:
+    readme = f.read()
+
 setup(
     name="discord-helpers",
     packages=["discord.ext.helpers"],
     version="0.0.5",
     license="MIT",
     description="A helper module for discord.py",
-    long_description=open("README.md", encoding="utf-8").read(),
+    long_description=readme,
     long_description_content_type="text/markdown",
     author="Dorukyum",
     url="https://github.com/Dorukyum/discord-helpers",
