@@ -17,6 +17,7 @@ A helper module for discord.py
 ### Stable Release:
 ```
 pip install -U discord-helpers
+pip install -U discord-helpers[sqlite]
 ```
 ### Development:
 ```

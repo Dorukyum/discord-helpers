@@ -19,7 +19,8 @@ setup(
     author="Dorukyum",
     url="https://github.com/Dorukyum/discord-helpers",
     keywords="discord, discord.py, API",
-    install_requires=open("requirements.txt").read().split("\n"),
+    install_requires=["aiohttp"],
+    extras_require={"sqlite": "aiosqlite"},
     classifiers=classifiers,
     project_urls={"Source": "https://github.com/Dorukyum/discord-helpers"},
 )
