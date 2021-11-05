@@ -1,16 +1,16 @@
 class StatusCycle:
-    def __init__(self, *args):
+    def __init__(self, *args: str) -> None:
         self.list = list(args)
         self.index = 0
 
     @property
-    def current(self):
+    def current(self) -> str:
         return self.list[self.index]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.current
 
-    def next(self):
+    def next(self) -> str:
         self.index += 1
         try:
             return self.current
