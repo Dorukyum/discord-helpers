@@ -64,15 +64,17 @@ async def send_pages(ctx):
 ```
 ### Invite Tracker
 ```python
+bot.tracker = helpers.InviteTracker(bot, "data.db")
 @bot.event
 async def on_invite_create(inv):
-    await bot.db.invite_tracker.add_invite(inv)
+    await bot.tracker.add_invite(inv)
 # and so on for the guild_join, guild_remove and invite_delete events
+
 @bot.event
 async def on_member_join(member):
-    inviter, invite = await bot.db.invite_tracker.track(member)
+    inviter, invite = await bot.tracker.track(member)
     await bot.get_channel(my_channel_id).send(inviter.name)
-    await bot.db.invite_tracker.increment_uses(invite, 1)
+    await bot.tracker.increment_uses(invite, 1)
 ```
 ### Webhooks
 ```python
