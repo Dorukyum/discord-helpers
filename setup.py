@@ -1,7 +1,7 @@
 from setuptools import setup
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 3 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
     "License :: OSI Approved :: MIT License",
@@ -14,7 +14,7 @@ with open("README.md", encoding="utf-8") as f:
 setup(
     name="discord-helpers",
     packages=["discord.ext.helpers"],
-    version="0.0.5",
+    version="0.1.0",
     license="MIT",
     description="A helper module for discord.py",
     long_description=readme,
