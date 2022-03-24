@@ -1,5 +1,5 @@
 from asyncio import TimeoutError
-from typing import Iterable, List, Union
+from typing import List, Union
 
 from discord.ext.commands import Bot, Context
 
@@ -10,12 +10,12 @@ class Paginator:
     def __init__(
         self,
         bot: Union[Client, Bot],
-        pages: Iterable[Embed] = [],
+        pages: List[Embed] = [],
         remove_reaction_after: bool = True,
         first_page_index: int = 0,
     ) -> None:
         self.bot = bot
-        self.pages: List = list(pages)
+        self.pages = pages
         self.index = first_page_index
         self._msg = 0
         self._clear = remove_reaction_after
@@ -23,8 +23,8 @@ class Paginator:
     def add_page(self, page: Embed) -> None:
         self.pages.append(page)
 
-    def add_pages(self, pages: Iterable[Embed]) -> None:
-        self.pages += list(pages)
+    def add_pages(self, pages: List[Embed]) -> None:
+        self.pages += pages
 
     async def start(self, ctx: Context, timeout=30) -> None:
         self._msg = msg = await ctx.send(embed=self.pages[self.index])
