@@ -29,6 +29,7 @@ pip install -U git+https://github.com/Dorukyum/discord-helpers.git
 ```python
 import discord
 from discord.ext import commands, helpers
+
 bot = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
 
 @bot.event
@@ -46,6 +47,7 @@ async def on_message(message):
 @bot.command()
 async def change_prefix(ctx, *, prefix):
 	await bot.db.change_prefix(ctx.guild.id, prefix)
+    await ctx.send(f"Successfuly changed the prefix to `{prefix}`.")
 ```
 ### Chatbot
 ```python
@@ -59,13 +61,18 @@ async def on_message(message):
 ```python
 @bot.command()
 async def send_pages(ctx):
-    paginator = helpers.Paginator(bot, pages=(discord.Embed(title="Page 1"),))
-    paginator.add_page(discord.Embed(title="Page 2"))
+    paginator = helpers.Paginator(bot, pages=[
+        discord.Embed(title="Page 1"),
+        discord.Embed(title="Page 2"),
+    ])
+    paginator.add_page(discord.Embed(title="Page 3"))
     await paginator.start(ctx)
 ```
 ### Invite Tracker
 ```python
-bot.tracker = helpers.InviteTracker(bot, "data.db")
+tracker = helpers.InviteTracker(bot, "data.db")  # with a database
+tracker = helpers.InviteTracker(bot)             # without a database, cached
+
 @bot.event
 async def on_invite_create(inv):
     await bot.tracker.add_invite(inv)
@@ -73,9 +80,9 @@ async def on_invite_create(inv):
 
 @bot.event
 async def on_member_join(member):
-    inviter, invite = await bot.tracker.track(member)
+    inviter, invite = await tracker.track(member)
     await bot.get_channel(my_channel_id).send(inviter.name)
-    await bot.tracker.increment_uses(invite, 1)
+    await tracker.increment_uses(invite, 1)
 ```
 ### Webhooks
 ```python
@@ -86,6 +93,7 @@ async def send_webhook(ctx, *, text):
 ### Status
 ```python
 bot.status = helpers.StatusCycle("status 1", "status 2")
+
 @tasks.loop(minutes=3)
 async def change_status():
 	await bot.change_presence(activity=discord.Game(bot.status.next()))
