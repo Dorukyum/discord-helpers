@@ -1,11 +1,14 @@
+from typing import List
+
+
 class StatusCycle:
-    def __init__(self, *args: str) -> None:
-        self.list = list(args)
-        self.index = 0
+    def __init__(self, *statuses: str) -> None:
+        self.statuses: List[str] = list(statuses)
+        self.index: int = 0
 
     @property
     def current(self) -> str:
-        return self.list[self.index]
+        return self.statuses[self.index]
 
     def __str__(self) -> str:
         return self.current
