@@ -1,3 +1,4 @@
+from typing import Optional
 import discord
 
 
@@ -9,9 +10,9 @@ class Webhooks:
         *,
         channel: discord.TextChannel,
         webhook_name: str,
-        sender_name: str = None,
-        icon_url: str = None
-    ) -> discord.WebhookMessage:
+        sender_name: Optional[str] = None,
+        icon_url: Optional[str] = None
+    ) -> Optional[discord.WebhookMessage]:
         webhooks = await channel.webhooks()
         for webhook in webhooks:
             if webhook.name == webhook_name:
@@ -27,11 +28,14 @@ class Webhooks:
         text: str,
         webhook: discord.Webhook,
         *,
-        sender_name: str = None,
-        icon_url: str = None
-    ) -> discord.WebhookMessage:
+        sender_name: Optional[str] = None,
+        icon_url: Optional[str] = None
+    ) -> Optional[discord.WebhookMessage]:
         if not icon_url:
-            icon_url = webhook.avatar
+            icon_url = webhook.avatar.url
         if not sender_name:
-            sender_name = webhook.name
-        return await webhook.send(text, username=sender_name, avatar_url=icon_url)
+            if webhook.name:
+                return await webhook.send(
+                    text, username=webhook.name, avatar_url=icon_url
+                )
+            return await webhook.send(text, avatar_url=icon_url)
