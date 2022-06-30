@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict, List, Optional, Union
+from typing import Optional, Tuple
 import aiosqlite
 import discord
 
@@ -12,21 +12,21 @@ class InviteTracker:
 
     async def _init(self) -> None:
         self.data = {
-            g.id: {i.id: i.uses for i in await g.invites()} for g in self.bot.guilds
+            g.id: {i.id: i.uses or 0 for i in await g.invites()} for g in self.bot.guilds
         }
-        async with aiosqlite.connect(self.database) as con:
-            async with con.cursor() as cur:
-                await cur.execute(
-                    "CREATE TABLE IF NOT EXISTS invites (guild_id BIGINT, invite_id TEXT, uses INT, PRIMARY KEY (guild_id, invite_id))"
-                )
-                await con.commit()
-                await cur.execute("SELECT * FROM invites")
-                data = await cur.fetchall()
-                if data == []:
-                    await self._add_to_db(self.data, True)
+        if self.database:
+            async with aiosqlite.connect(self.database) as con:
+                async with con.cursor() as cur:
+                    await cur.execute(
+                        "CREATE TABLE IF NOT EXISTS invites (guild_id BIGINT, invite_id TEXT, uses INT, PRIMARY KEY (guild_id, invite_id))"
+                    )
+                    await con.commit()
+                    await cur.execute("SELECT * FROM invites")
+                    if not await cur.fetchone():
+                        await self._add_to_db(self.data, True)
 
     async def _add_to_db(
-        self, data: Dict[int, Dict[int, int]], init: bool = False, *, guild_id: int = 0
+        self, data: dict, init: bool = False, *, guild_id: int = 0
     ) -> None:
         if self.database is not None:
             async with aiosqlite.connect(self.database) as con:
@@ -58,16 +58,16 @@ class InviteTracker:
                     await con.commit()
 
     async def add_guild(self, guild: discord.Guild) -> None:
-        self.data[guild.id] = {i.id: i.uses for i in await guild.invites()}
-        await self._add_to_db(self.data[guild.id], guild.id)
+        self.data[guild.id] = {i.id: i.uses or 0 for i in await guild.invites()}
+        await self._add_to_db(self.data[guild.id], guild_id=guild.id)
 
     async def remove_guild(self, guild: discord.Guild) -> None:
         del self.data[guild.id]
         await self._remove_from_db("guild", guild.id)
 
     async def add_invite(self, invite: discord.Invite) -> None:
-        self.data[invite.guild.id][invite.id] = invite.uses
-        await self._add_to_db(self.data[invite.guild.id][invite.id], invite.guild.id)
+        self.data[invite.guild.id][invite.id] = invite.uses or 0
+        await self._add_to_db(self.data[invite.guild.id], guild_id=invite.guild.id)
 
     async def remove_invite(self, invite: discord.Invite) -> None:
         del self.data[invite.guild.id][invite.id]
@@ -75,20 +75,23 @@ class InviteTracker:
 
     async def increment_uses(self, invite: discord.Invite, count: int) -> None:
         self.data[invite.guild.id][invite.id] += count
-        async with aiosqlite.connect(self.database) as con:
-            async with con.cursor() as cur:
-                await cur.execute(
-                    "UPDATE invites SET uses = ? WHERE invite_id = ?",
-                    (self.data[invite.guild.id][invite.id], invite.id),
-                )
-                await con.commit()
+        if self.database:
+            async with aiosqlite.connect(self.database) as con:
+                async with con.cursor() as cur:
+                    await cur.execute(
+                        "UPDATE invites SET uses = ? WHERE invite_id = ?",
+                        (self.data[invite.guild.id][invite.id], invite.id),
+                    )
+                    await con.commit()
 
     async def track(
-        self, member: discord.Member
-    ) -> List[Union[discord.Member, discord.Invite]]:
+        self, member: discord.Member, *, update_count: bool = False
+    ) -> Optional[Tuple[Optional[discord.Member], discord.Invite]]:
         new_data = {i.id: i.uses for i in await member.guild.invites()}
         for inv in self.data[member.guild.id].keys():
             if new_data[inv] == self.data[member.guild.id][inv] + 1:
                 for invite in await member.guild.invites():
-                    if invite.id == inv:
-                        return [member.guild.get_member(invite.inviter.id), invite]
+                    if invite.id == inv and invite.inviter:
+                        if update_count:
+                            await self.increment_uses(invite, 1)
+                        return (member.guild.get_member(invite.inviter.id), invite)
