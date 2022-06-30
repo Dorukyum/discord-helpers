@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from discord import Color, Colour
 from discord import Embed as OriginalEmbed
@@ -11,12 +11,12 @@ def Embed(
     fields: dict = {},
     inline_fields: bool = True,
     footer: str = "",
-    footer_icon: str = None,
+    footer_icon: Optional[str] = None,
     author: str = "",
-    author_icon: str = None,
-    thumbnail: str = None,
-    image: str = None,
-):
+    author_icon: Optional[str] = None,
+    thumbnail: Optional[str] = None,
+    image: Optional[str] = None,
+) -> OriginalEmbed:
     embed = OriginalEmbed(title=title, description=description, colour=colour)
     if footer_icon is not None:
         embed.set_footer(text=footer, icon_url=footer_icon)
