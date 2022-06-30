@@ -14,7 +14,7 @@ with open("README.md", encoding="utf-8") as f:
 setup(
     name="discord-helpers",
     packages=["discord.ext.helpers"],
-    version="0.1.0",
+    version="0.2.0",
     license="MIT",
     description="A helper module for discord.py",
     long_description=readme,

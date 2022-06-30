@@ -3,7 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/discord-helpers.svg) <br>
 A helper module for discord.py and its forks
 
-## Current Features (v0.1.0)
+## Current Features (v0.2.0)
 * Invite tracker
 * Per server custom prefixes using SQLite3 - aiosqlite
 * Paginator
