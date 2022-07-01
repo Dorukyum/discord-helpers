@@ -88,10 +88,11 @@ class InviteTracker:
         self, member: discord.Member, *, update_count: bool = False
     ) -> Optional[Tuple[Optional[discord.Member], discord.Invite]]:
         new_data = {i.id: i.uses for i in await member.guild.invites()}
-        for inv in self.data[member.guild.id].keys():
-            if new_data[inv] == self.data[member.guild.id][inv] + 1:
-                for invite in await member.guild.invites():
-                    if invite.id == inv and invite.inviter:
-                        if update_count:
-                            await self.increment_uses(invite, 1)
-                        return (member.guild.get_member(invite.inviter.id), invite)
+        if guild_data := self.data.get(member.guild.id):
+            for inv in guild_data.keys():
+                if new_data.get(inv, 0) == guild_data[inv] + 1:
+                    for invite in await member.guild.invites():
+                        if invite.id == inv and invite.inviter:
+                            if update_count:
+                                await self.increment_uses(invite, 1)
+                            return (member.guild.get_member(invite.inviter.id), invite)
